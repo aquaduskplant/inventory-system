@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
@@ -64,5 +64,23 @@ Route::middleware('auth')->group(function () {
             ->name('stock.out.store');
     });
 });
+Route::get('/run-migrations-once', function () {
+    // Be a bit safe: only allow in production on Render
+    if (!app()->environment('production')) {
+        abort(403, 'Not allowed in non-production environment.');
+    }
 
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        Artisan::call('db:seed', ['--force' => true]);
+
+        return '<h1>✅ Migrations and seed completed.</h1><pre>'
+            . Artisan::output()
+            . '</pre>';
+    } catch (\Throwable $e) {
+        return '<h1>❌ Error running migrations.</h1><pre>'
+            . e($e->getMessage())
+            . '</pre>';
+    }
+});
 require __DIR__ . '/auth.php';
