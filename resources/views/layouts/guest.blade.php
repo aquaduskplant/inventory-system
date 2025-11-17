@@ -13,7 +13,14 @@
         <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+@if (app()->environment('production'))
+    {{-- On Render (production), load the pre-built Vite assets directly --}}
+    <link rel="stylesheet" href="/build/assets/app-BAwC6vSq.css">
+    <script type="module" src="/build/assets/app-CJy8ASEk.js"></script>
+@else
+    {{-- On local dev, keep using Vite --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+@endif
     </head>
     <body class="font-sans antialiased bg-slate-950 text-slate-100">
         <div class="min-h-screen flex items-center justify-center relative overflow-hidden">
